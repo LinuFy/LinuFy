@@ -54,6 +54,16 @@ check_linufy() {
     else
         echo "[-] LinuFy application not detected" >&2;
         curl -LO https://raw.githubusercontent.com/LinuFy/LinuFy/main/docker-compose.yml > /dev/null 2>&1;
+        linufy_db_root_password=$(openssl rand -hex 32)
+        linufy_db_password=$(openssl rand -hex 32)
+        echo "Set let's encrypt email address (ex. postmaster@example.com):"
+        read linufy_le_email
+        echo "Set LinuFy domain name (ex. server1.example.com):"
+        read linufy_domain_name
+        sed -i "s/LINUFY_DB_ROOT_PASSWORD/$linufy_db_root_password/" docker-compose.yml
+        sed -i "s/LINUFY_DB_PASSWORD/$linufy_db_password/" docker-compose.yml
+        sed -i "s/LINUFY_LE_EMAIL/$linufy_le_email/" docker-compose.yml
+        sed -i "s/LINUFY_DOMAIN_NAME/$linufy_domain_name/" docker-compose.yml
         docker compose up -d > /dev/null 2>&1;
         echo "[+] LinuFy application is installed" >&2;
     fi
