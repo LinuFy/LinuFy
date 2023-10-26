@@ -53,7 +53,7 @@ check_linufy() {
         echo "[+] LinuFy application is detected" >&2;
     else
         echo "[-] LinuFy application not detected" >&2;
-        curl -LO https://raw.githubusercontent.com/bitnami/containers/main/bitnami/laravel/docker-compose.yml > /dev/null 2>&1;
+        curl -LO https://raw.githubusercontent.com/LinuFy/LinuFy/main/docker-compose.yml > /dev/null 2>&1;
         docker compose up -d > /dev/null 2>&1;
         echo "[+] LinuFy application is installed" >&2;
     fi
