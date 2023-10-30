@@ -54,6 +54,8 @@ check_linufy() {
     else
         echo "[-] LinuFy application not detected" >&2;
         curl -LO https://raw.githubusercontent.com/LinuFy/LinuFy/main/docker-compose.yml > /dev/null 2>&1;
+        mkdir -p ./linufy_db
+        chown 1000:1000 ./linufy_db
         linufy_db_root_password=$(openssl rand -hex 32)
         linufy_db_password=$(openssl rand -hex 32)
         echo "Set let's encrypt email address (ex. postmaster@example.com):"

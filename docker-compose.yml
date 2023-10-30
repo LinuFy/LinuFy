@@ -12,10 +12,15 @@ services:
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
       - "--certificatesresolvers.le.acme.httpchallenge=true"
       - "--certificatesresolvers.le.acme.httpchallenge.entrypoint=web"
       - "--certificatesresolvers.le.acme.email=LINUFY_LE_EMAIL"
       - "--certificatesresolvers.le.acme.storage=/letsencrypt/acme.json"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "./letsencrypt:/letsencrypt"
   mariadb:
     image: docker.io/bitnami/mariadb:11.0
     environment:
@@ -25,8 +30,7 @@ services:
       - MARIADB_DATABASE=linufy_db
     restart: always
     volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - "./letsencrypt:/letsencrypt"
+      - './linufy_db:/bitnami/mariadb'
   linufy:
     image: docker.io/bitnami/laravel:10
     environment:
@@ -37,9 +41,10 @@ services:
       - DB_DATABASE=linufy_db
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.whoami.rule=Host('LINUFY_DOMAIN_NAME')"
-      - "traefik.http.routers.whoami.entrypoints=websecure"
-      - "traefik.http.routers.whoami.tls.certresolver=le"
+      - "traefik.http.routers.linufy.rule=Host(`LINUFY_DOMAIN_NAME`)"
+      - "traefik.http.routers.linufy.tls.certresolver=le"
+      - "traefik.http.routers.linufy.tls=true"
+      - "traefik.http.services.linufy.loadbalancer.server.port=8000"
     restart: always
     volumes:
       - './my-project:/app'
